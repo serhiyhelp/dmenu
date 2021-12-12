@@ -1063,10 +1063,8 @@ setup(void)
 	static void
 usage(void)
 {
-	fputs("usage: dmenu [-bfivS] [-l lines] [-h height] [-p prompt] [-fn font] [-m monitor]\n"
-			"             [-nb color] [-nf color] [-sb color] [-sf color]\n"
-			"             [-nhb color] [-nhf color] [-shb color] [-shf color]\n"
-			"             [-w windowid] [-it text] [-n number]\n", stderr);
+	fputs("використання: dmenu [-bfFirvsS] [-l кількість] [-h висота] [-p питання] [-m монітор]\n"
+		  "                    [-w id_вікна] [-it текст] [-n номер]\n", stderr);
 	exit(1);
 }
 
@@ -1081,11 +1079,12 @@ main(int argc, char *argv[])
 		if (!strcmp(argv[i], "-v")) {      /* prints version information */
 			puts("dmenu-"VERSION);
 			exit(0);
-		} else if (!strcmp(argv[i], "-b")) /* appears at the bottom of the screen */
+		}
+		else if (!strcmp(argv[i], "-b"))   /* appears at the bottom of the screen */
 			topbar = 0;
 		else if (!strcmp(argv[i], "-f"))   /* grabs keyboard before reading stdin */
 			fast = 1;
-		else if (!strcmp(argv[i], "-F"))   /* grabs keyboard before reading stdin */
+		else if (!strcmp(argv[i], "-F"))   /* disable fuzzy match */
 			fuzzy = 0;
 		else if (!strcmp(argv[i], "-S"))   /* do not sort matches */
 			sortmatches = false;
@@ -1093,7 +1092,7 @@ main(int argc, char *argv[])
 			fstrncmp = strncmp;
 			fstrstr = strstr;
 		}
-		else if (!strcmp(argv[i], "-r"))
+		else if (!strcmp(argv[i], "-r"))   /* disable multiselect */
 			restrict_return = 1;
 		else if (i + 1 == argc)
 			usage();
@@ -1104,33 +1103,15 @@ main(int argc, char *argv[])
 			lineheight = atoi(argv[++i]);
 			lineheight = MAX(lineheight, min_lineheight);
 		}
-		else if (!strcmp(argv[i], "-m"))
+		else if (!strcmp(argv[i], "-m"))   /* monitor */
 			mon = atoi(argv[++i]);
 		else if (!strcmp(argv[i], "-p"))   /* adds prompt to left of input field */
 			prompt = argv[++i];
-		else if (!strcmp(argv[i], "-fn"))  /* font or font set */
-			fonts[0] = argv[++i];
-		else if (!strcmp(argv[i], "-nb"))  /* normal background color */
-			colors[SchemeNorm][ColBg] = argv[++i];
-		else if (!strcmp(argv[i], "-nf"))  /* normal foreground color */
-			colors[SchemeNorm][ColFg] = argv[++i];
-		else if (!strcmp(argv[i], "-sb"))  /* selected background color */
-			colors[SchemeSel][ColBg] = argv[++i];
-		else if (!strcmp(argv[i], "-sf"))  /* selected foreground color */
-			colors[SchemeSel][ColFg] = argv[++i];
-		else if (!strcmp(argv[i], "-nhb")) /* normal hi background color */
-			colors[SchemeNormHighlight][ColBg] = argv[++i];
-		else if (!strcmp(argv[i], "-nhf")) /* normal hi foreground color */
-			colors[SchemeNormHighlight][ColFg] = argv[++i];
-		else if (!strcmp(argv[i], "-shb")) /* selected hi background color */
-			colors[SchemeSelHighlight][ColBg] = argv[++i];
-		else if (!strcmp(argv[i], "-shf")) /* selected hi foreground color */
-			colors[SchemeSelHighlight][ColFg] = argv[++i];
 		else if (!strcmp(argv[i], "-w"))   /* embedding window id */
 			embed = argv[++i];
 		else if (!strcmp(argv[i], "-n"))   /* preselected item */
 			preselected = atoi(argv[++i]);
-		else if (!strcmp(argv[i], "-it")) {
+		else if (!strcmp(argv[i], "-it")) { /* init text */
 			const char * text = argv[++i];
 			insert(text, strlen(text));
 		}

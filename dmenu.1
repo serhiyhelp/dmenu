@@ -1,179 +1,131 @@
 .TH DMENU 1 dmenu\-VERSION
-.SH NAME
-dmenu \- dynamic menu
-.SH SYNOPSIS
+.SH НАЗВА
+dmenu \- динамічне меню
+.SH ПІДСУМОК
 .B dmenu
-.RB [ \-bfsrv ]
+.RB [ \-FSbfirvs ]
 .RB [ \-l
-.IR lines ]
+.IR кількість ]
 .RB [ \-h
-.IR height ]
-.RB [ \-m
-.IR monitor ]
+.IR висота ]
 .RB [ \-p
-.IR prompt ]
-.RB [ \-fn
-.IR font ]
-.RB [ \-nb
-.IR color ]
-.RB [ \-nf
-.IR color ]
-.RB [ \-sb
-.IR color ]
-.RB [ \-sf
-.IR color ]
-.RB [ \-nhb
-.IR color ]
-.RB [ \-nhf
-.IR color ]
-.RB [ \-shb
-.IR color ]
-.RB [ \-shf
-.IR color ]
+.IR питання ]
+.RB [ \-m
+.IR монітор ]
 .RB [ \-w
-.IR windowid ]
-.RB [ \-n
-.IR number ]
+.IR id_вікна ]
 .RB [ \-it
-.IR text ]
+.IR текст ]
+.RB [ \-n
+.IR номер ]
 .P
 .BR dmenu_run " ..."
-.SH DESCRIPTION
+.SH ОПИС
 .B dmenu
-is a dynamic menu for X, which reads a list of newline\-separated items from
-stdin.  When the user selects an item and presses Return, their choice is printed
-to stdout and dmenu terminates.  Entering text will narrow the items to those
-matching the tokens in the input.
+\- це динамічне меню для X, яке приймає список пунктів з stdin,
+по одному на рядок.
+Після того, як користувач обере один з пунктів та натисне Return,
+його вибір буде виведено в stdout а dmenu завершить роботу.
+Якщо почати набирати текст, то кількість пунктів у меню буде скорочуватись до тих,
+які співпадають із введеним текстом.
 .P
 .B dmenu_run
-is a script used by
-.IR dwm (1)
-which lists programs in the user's $PATH and runs the result in their $SHELL.
-.SH OPTIONS
+\- це скрипт, що використовується
+.IR dwm (1).
+Він виводить перелік програм на $PATH користувача й запускає вибір його $SHELL.
+.SH КЛЮЧІ
 .TP
 .B \-b
-dmenu appears at the bottom of the screen.
+відображувати знизу екрану
 .TP
 .B \-f
-dmenu grabs the keyboard before reading stdin if not reading from a tty. This
-is faster, but will lock up X until stdin reaches end\-of\-file.
+dmenu зчитує клавіатуру перед stdin, якщо читає не з tty.
+Так швидше, але X буде заблокованим поки stdin не досягне кінця файлу.
 .TP
 .B \-s
 dmenu matches menu items case sensitively.
 .TP
 .B \-S
-dmenu does not sort menu items after matching.
+не впорядковувати пункти після звірювання.
 .TP
 .B \-r
-disables ctr-return and shift-return. this guarantees that dmenu prints to
-stdout only once, and it only prints an item read from stdin.
+вимикає ctrl-return та shift-return і тим забеспечує відсутність множинного вибору.
 .TP
 .BI \-l " lines"
-dmenu lists items vertically, with the given number of lines.
+вертикальний список із вказаною кількістю рядків.
 .TP
-.BI \-h " height"
-dmenu uses a menu line of at least 'height' pixels tall, but no less than 8.
+.BI \-h " висота"
+висота рядків у пікселах.
+Не може бути менше восьми.
 .TP
-.BI \-m " monitor"
-dmenu is displayed on the monitor number supplied. Monitor numbers are starting
-from 0.
+.BI \-m " монітор"
+вибрати монітор, починаючи з нуля.
 .TP
-.BI \-p " prompt"
-defines the prompt to be displayed to the left of the input field.
-.TP
-.BI \-fn " font"
-defines the font or font set used.
-.TP
-.BI \-nb " color"
-defines the normal background color.
-.IR #RGB ,
-.IR #RRGGBB ,
-and X color names are supported.
-.TP
-.BI \-nf " color"
-defines the normal foreground color.
-.TP
-.BI \-sb " color"
-defines the selected background color.
-.TP
-.BI \-sf " color"
-defines the selected foreground color.
-.TP
-.BI \-nhb " color"
-defines the normal highlight background color.
-.TP
-.BI \-nhf " color"
-defines the normal highlight foreground color.
-.TP
-.BI \-shb " color"
-defines the selected highlight background color.
-.TP
-.BI \-shf " color"
-defines the selected highlight foreground color.
+.BI \-p " запитання"
+визначає текст, що буде написаний зліва від поля вводу.
 .TP
 .B \-v
-prints version information to stdout, then exits.
+виводить версію програми.
 .TP
-.BI \-w " windowid"
-embed into windowid.
+.BI \-w " id_вікна"
+запустити всередині вікна із вказаним id.
 .TP
-.BI \-n " number"
-preseslected item starting from 0.
+.BI \-n " номер"
+Почати з виділеним пунктом під певним номером, починаючи з нуля.
 .TP
-.BI \-it " text".
-start with initial text input.
-.SH USAGE
-dmenu is completely controlled by the keyboard.  Items are selected using the
-arrow keys, page up, page down, home, and end.
+.BI \-it " текст".
+Почати з уже введеним текстом.
+.SH ВИКОРИСТАННЯ
+Для використання dmenu достатньо лише клавіатури.
+Можна рухатись по меню за стрілочками, page up, page down, home та end.
 .TP
 .B Tab
-Copy the selected item to the input field.
+Зкопіювати вибраний пункт до поля вводу.
 .TP
 .B Return
-Confirm selection.  Prints the selected item to stdout and exits, returning
-success.
+Зробити вибір та вийти.
 .TP
 .B Ctrl-Return
-Confirm selection.  Prints the selected item to stdout and continues.
+Вибрати пункт але не виходити.
 .TP
 .B Shift\-Return
-Confirm input.  Prints the input text to stdout and exits, returning success.
+Підтвердити вибір. Виводить обрані пункти до stdout та завершує роботу.
 .TP
 .B Escape
-Exit without selecting an item, returning failure.
+Вийти не виділивши жодного пункту, повернувши помилку.
 .TP
 .B Ctrl-Left
-Move cursor to the start of the current word
+Перемістити курсор на початок слова
 .TP
 .B Ctrl-Right
-Move cursor to the end of the current word
+Перемістити курсор в кінець слова
 .TP
 .B C\-a
-Home
+На початок
 .TP
 .B C\-b
-Left
+Ліворуч
 .TP
 .B C\-c
-Escape
+Вийти
 .TP
 .B C\-d
-Delete
+Видалити вправо
 .TP
 .B C\-e
-End
+В кінець рядка
 .TP
 .B C\-f
-Right
+Праворуч
 .TP
 .B C\-g
-Escape
+Вийти
 .TP
 .B C\-h
-Backspace
+Видалити вліво
 .TP
 .B C\-i
-Tab
+Табуляція
 .TP
 .B C\-j
 Return
@@ -182,7 +134,7 @@ Return
 Shift-Return
 .TP
 .B C\-k
-Delete line right
+Видалити кінець слова
 .TP
 .B C\-m
 Return
@@ -191,46 +143,46 @@ Return
 Shift-Return
 .TP
 .B C\-n
-Down
+Вниз
 .TP
 .B C\-p
-Up
+Вгору
 .TP
 .B C\-u
-Delete line left
+Видалити початок рядка
 .TP
 .B C\-w
-Delete word left
+Видалити початок слова
 .TP
 .B C\-y
-Paste from primary X selection
+Вставити з основного буферу
 .TP
 .B C\-Y
-Paste from X clipboard
+Вставити з X буферу обміну
 .TP
 .B M\-b
-Move cursor to the start of the current word
+На початок слова
 .TP
 .B M\-f
-Move cursor to the end of the current word
+В кінець слова
 .TP
 .B M\-g
-Home
+На початок
 .TP
 .B M\-G
-End
+В кінкць
 .TP
 .B M\-h
-Up
+Вгору
 .TP
 .B M\-j
-Page down
+На сторінку вниз
 .TP
 .B M\-k
-Page up
+На сторінку вгору
 .TP
 .B M\-l
-Down
-.SH SEE ALSO
+Вниз
+.SH ДИВИСЬ ТАКОЖ
 .IR dwm (1),
 .IR stest (1)
