@@ -31,7 +31,7 @@
 #define OPAQUE 0xFFU
 
 /* enums */
-enum { SchemeNorm, SchemeSel, SchemeNormHighlight, SchemeSelHighlight,
+enum { SchemeNorm, SchemeSel, SchemeNormHighlight, SchemeSelHighlight, SchemeOutHighlight,
        SchemeOut, SchemeLast }; /* color schemes */
 
 
@@ -191,9 +191,14 @@ drawhighlights(struct item *item, int x, int y, int maxw)
 	if (!(strlen(item->text) && strlen(text)))
 		return;
 
-	drw_setscheme(drw, scheme[item == sel
-	                   ? SchemeSelHighlight
-	                   : SchemeNormHighlight]);
+
+	if (item == sel)
+		drw_setscheme(drw, scheme[SchemeSelHighlight]);
+	else if (issel(item->id))
+		drw_setscheme(drw, scheme[SchemeOutHighlight]);
+	else
+		drw_setscheme(drw, scheme[SchemeNormHighlight]);
+
 	for (i = 0, highlight = item->text; *highlight && text[i];) {
 		if (*highlight == text[i]) {
 			/* get indentation */

@@ -15,18 +15,22 @@ static const unsigned int bgalpha = OPAQUE;
 static const unsigned int fgalpha = OPAQUE;
 static const char *prompt      = NULL;      /* -p  option; prompt to the left of input field */
 static const char *colors[SchemeLast][2] = {
-	/*     fg         bg       */
-	[SchemeNorm] = { "#bbbbbb", "#222222" },
-	[SchemeSel] = { "#eeeeee", "#005577" },
-	[SchemeSelHighlight] = { "#ffc978", "#005577" },
-	[SchemeNormHighlight] = { "#ffc978", "#222222" },
-	[SchemeOut] = { "#000000", "#00ffff" },
+	/*                        fg         bg       */
+	[SchemeNorm] =          { "#93a1a1", "#073642" },
+	[SchemeSel] =           { "#eee8d5", "#2aa198" },
+	[SchemeSelHighlight] =  { "#fdf6e3", "#2aa198" },
+	[SchemeNormHighlight] = { "#fdf6e3", "#073642" },
+	[SchemeOut] =           { "#93a1a1", "#074858" },
+	[SchemeOutHighlight] =  { "#fdf6e3", "#074858" },
 };
 static const unsigned int alphas[SchemeLast][2] = {
-	/*		fgalpha		bgalphga	*/
-	[SchemeNorm] = { fgalpha, bgalpha },
-	[SchemeSel] = { fgalpha, bgalpha },
-	[SchemeOut] = { fgalpha, bgalpha },
+	/*                        fgalpha  bgalpha */
+	[SchemeNorm] =          { fgalpha, bgalpha },
+	[SchemeSel] =           { fgalpha, bgalpha },
+	[SchemeSelHighlight] =  { fgalpha, bgalpha },
+	[SchemeNormHighlight] = { fgalpha, bgalpha },
+	[SchemeOut] =           { fgalpha, bgalpha },
+	[SchemeOutHighlight] =  { fgalpha, bgalpha },
 };
 
 /* -l option; if nonzero, dmenu uses vertical list with given number of lines */
