@@ -522,19 +522,28 @@ keypress(XKeyEvent *ev)
 			goto draw;
 		case XK_Return:
 		case XK_KP_Enter:
-			if (sel && issel(sel->id)) {
-				for (int i = 0;i < selidsize;i++)
-					if (selid[i] == sel->id)
-						selid[i] = -1;
-			} else {
-				for (int i = 0;i < selidsize;i++)
-					if (selid[i] == -1) {
-						selid[i] = sel->id;
-						return;
-					}
-				selidsize++;
-				selid = realloc(selid, (selidsize + 1) * sizeof(int));
-				selid[selidsize - 1] = sel->id;
+			if (restrict_return) {
+				if (!sel || ev->state & (ShiftMask | ControlMask))
+					break;
+				puts(sel->text);
+				cleanup();
+				exit(0);
+			}
+			else {
+				if (sel && issel(sel->id)) {
+					for (int i = 0;i < selidsize;i++)
+						if (selid[i] == sel->id)
+							selid[i] = -1;
+				} else {
+					for (int i = 0;i < selidsize;i++)
+						if (selid[i] == -1) {
+							selid[i] = sel->id;
+							return;
+						}
+					selidsize++;
+					selid = realloc(selid, (selidsize + 1) * sizeof(int));
+					selid[selidsize - 1] = sel->id;
+				}
 			}
 			break;
 		case XK_bracketleft:
@@ -545,144 +554,144 @@ keypress(XKeyEvent *ev)
 		}
 	} else if (ev->state & Mod1Mask) {
 		switch(ksym) {
-		case XK_b:
-			movewordedge(-1);
-			goto draw;
-		case XK_f:
-			movewordedge(+1);
-			goto draw;
-		case XK_g: ksym = XK_Home;  break;
-		case XK_G: ksym = XK_End;   break;
-		case XK_h: ksym = XK_Up;    break;
-		case XK_j: ksym = XK_Next;  break;
-		case XK_k: ksym = XK_Prior; break;
-		case XK_l: ksym = XK_Down;  break;
-		default:
-			return;
+			case XK_b:
+				movewordedge(-1);
+				goto draw;
+			case XK_f:
+				movewordedge(+1);
+				goto draw;
+			case XK_g: ksym = XK_Home;  break;
+			case XK_G: ksym = XK_End;   break;
+			case XK_h: ksym = XK_Up;    break;
+			case XK_j: ksym = XK_Next;  break;
+			case XK_k: ksym = XK_Prior; break;
+			case XK_l: ksym = XK_Down;  break;
+			default:
+					   return;
 		}
 	}
 
 	switch(ksym) {
-	default:
+		default:
 insert:
-		if (!iscntrl(*buf))
-			insert(buf, len);
-		break;
-	case XK_Delete:
-	case XK_KP_Delete:
-		if (text[cursor] == '\0')
-			return;
-		cursor = nextrune(+1);
-		/* fallthrough */
-	case XK_BackSpace:
-		if (cursor == 0)
-			return;
-		insert(NULL, nextrune(-1) - cursor);
-		break;
-	case XK_End:
-	case XK_KP_End:
-		if (text[cursor] != '\0') {
-			cursor = strlen(text);
+			if (!iscntrl(*buf))
+				insert(buf, len);
 			break;
-		}
-		if (next) {
-			/* jump to end of list and position items in reverse */
-			curr = matchend;
-			calcoffsets();
-			curr = prev;
-			calcoffsets();
-			while (next && (curr = curr->right))
-				calcoffsets();
-		}
-		sel = matchend;
-		break;
-	case XK_Escape:
-		cleanup();
-		exit(1);
-	case XK_Home:
-	case XK_KP_Home:
-		if (sel == matches) {
-			cursor = 0;
-			break;
-		}
-		sel = curr = matches;
-		calcoffsets();
-		break;
-	case XK_Left:
-	case XK_KP_Left:
-		if (cursor > 0 && (!sel || !sel->left || lines > 0)) {
-			cursor = nextrune(-1);
-			break;
-		}
-		if (lines > 0)
-			return;
-		/* fallthrough */
-	case XK_Up:
-	case XK_KP_Up:
-		if (sel && sel->left && (sel = sel->left)->right == curr) {
-			curr = prev;
-			calcoffsets();
-		}
-		break;
-	case XK_Next:
-	case XK_KP_Next:
-		if (!next)
-			return;
-		sel = curr = next;
-		calcoffsets();
-		break;
-	case XK_Prior:
-	case XK_KP_Prior:
-		if (!prev)
-			return;
-		sel = curr = prev;
-		calcoffsets();
-		break;
-	case XK_Return:
-	case XK_KP_Enter:
-		if (!(ev->state & ControlMask)) {
-			for (int i = 0;i < selidsize;i++)
-				if (selid[i] != -1 && (!sel || sel->id != selid[i]))
-					puts(items[selid[i]].text);
-			if (sel && !(ev->state & ShiftMask))
-				puts(sel->text);
-			else
-				puts(text);
-			cleanup();
-			exit(0);
-		}
-		break;
-	case XK_Right:
-	case XK_KP_Right:
-		if (text[cursor] != '\0') {
+		case XK_Delete:
+		case XK_KP_Delete:
+			if (text[cursor] == '\0')
+				return;
 			cursor = nextrune(+1);
+			/* fallthrough */
+		case XK_BackSpace:
+			if (cursor == 0)
+				return;
+			insert(NULL, nextrune(-1) - cursor);
 			break;
-		}
-		if (lines > 0)
-			return;
-		/* fallthrough */
-	case XK_Down:
-	case XK_KP_Down:
-		if (sel && sel->right && (sel = sel->right) == next) {
-			curr = next;
+		case XK_End:
+		case XK_KP_End:
+			if (text[cursor] != '\0') {
+				cursor = strlen(text);
+				break;
+			}
+			if (next) {
+				/* jump to end of list and position items in reverse */
+				curr = matchend;
+				calcoffsets();
+				curr = prev;
+				calcoffsets();
+				while (next && (curr = curr->right))
+					calcoffsets();
+			}
+			sel = matchend;
+			break;
+		case XK_Escape:
+			cleanup();
+			exit(1);
+		case XK_Home:
+		case XK_KP_Home:
+			if (sel == matches) {
+				cursor = 0;
+				break;
+			}
+			sel = curr = matches;
 			calcoffsets();
-		}
-		break;
-	case XK_Tab:
-		if (!sel)
-			return;
-		strncpy(text, sel->text, sizeof text - 1);
-		text[sizeof text - 1] = '\0';
-		cursor = strlen(text);
-		match();
-		break;
+			break;
+		case XK_Left:
+		case XK_KP_Left:
+			if (cursor > 0 && (!sel || !sel->left || lines > 0)) {
+				cursor = nextrune(-1);
+				break;
+			}
+			if (lines > 0)
+				return;
+			/* fallthrough */
+		case XK_Up:
+		case XK_KP_Up:
+			if (sel && sel->left && (sel = sel->left)->right == curr) {
+				curr = prev;
+				calcoffsets();
+			}
+			break;
+		case XK_Next:
+		case XK_KP_Next:
+			if (!next)
+				return;
+			sel = curr = next;
+			calcoffsets();
+			break;
+		case XK_Prior:
+		case XK_KP_Prior:
+			if (!prev)
+				return;
+			sel = curr = prev;
+			calcoffsets();
+			break;
+		case XK_Return:
+		case XK_KP_Enter:
+			if (!(ev->state & ControlMask)) {
+				for (int i = 0;i < selidsize;i++)
+					if (selid[i] != -1 && (!sel || sel->id != selid[i]))
+						puts(items[selid[i]].text);
+				if (sel && !(ev->state & ShiftMask))
+					puts(sel->text);
+				else
+					puts(text);
+				cleanup();
+				exit(0);
+			}
+			break;
+		case XK_Right:
+		case XK_KP_Right:
+			if (text[cursor] != '\0') {
+				cursor = nextrune(+1);
+				break;
+			}
+			if (lines > 0)
+				return;
+			/* fallthrough */
+		case XK_Down:
+		case XK_KP_Down:
+			if (sel && sel->right && (sel = sel->right) == next) {
+				curr = next;
+				calcoffsets();
+			}
+			break;
+		case XK_Tab:
+			if (!sel)
+				return;
+			strncpy(text, sel->text, sizeof text - 1);
+			text[sizeof text - 1] = '\0';
+			cursor = strlen(text);
+			match();
+			break;
 	}
 
 draw:
 	drawmenu();
 }
 
-static void
+	static void
 buttonpress(XEvent *e)
 {
 	struct item *item;
@@ -706,9 +715,9 @@ buttonpress(XEvent *e)
 	 * NOTE: if there is no left-arrow the space for < is reserved so
 	 *       add that to the input width */
 	if (ev->button == Button1 &&
-	   ((lines <= 0 && ev->x >= 0 && ev->x <= x + w +
-	   ((!prev || !curr->left) ? TEXTW("<") : 0)) ||
-	   (lines > 0 && ev->y >= y && ev->y <= y + h))) {
+			((lines <= 0 && ev->x >= 0 && ev->x <= x + w +
+			  ((!prev || !curr->left) ? TEXTW("<") : 0)) ||
+			 (lines > 0 && ev->y >= y && ev->y <= y + h))) {
 		insert(NULL, -cursor);
 		drawmenu();
 		return;
@@ -716,7 +725,7 @@ buttonpress(XEvent *e)
 	/* middle-mouse click: paste selection */
 	if (ev->button == Button2) {
 		XConvertSelection(dpy, (ev->state & ShiftMask) ? clip : XA_PRIMARY,
-		                  utf8, utf8, win, CurrentTime);
+				utf8, utf8, win, CurrentTime);
 		drawmenu();
 		return;
 	}
@@ -795,7 +804,7 @@ buttonpress(XEvent *e)
 	}
 }
 
-static void
+	static void
 paste(void)
 {
 	char *p, *q;
@@ -805,15 +814,15 @@ paste(void)
 
 	/* we have been given the current selection, now insert it into input */
 	if (XGetWindowProperty(dpy, win, utf8, 0, (sizeof text / 4) + 1, False,
-	                   utf8, &da, &di, &dl, &dl, (unsigned char **)&p)
-	    == Success && p) {
+				utf8, &da, &di, &dl, &dl, (unsigned char **)&p)
+			== Success && p) {
 		insert(p, (q = strchr(p, '\n')) ? q - p : (ssize_t)strlen(p));
 		XFree(p);
 	}
 	drawmenu();
 }
 
-static void
+	static void
 readstdin(void)
 {
 	char buf[sizeof text], *p;
@@ -842,7 +851,7 @@ readstdin(void)
 	lines = MIN(lines, i);
 }
 
-static void
+	static void
 run(void)
 {
 	XEvent ev;
@@ -862,39 +871,39 @@ run(void)
 		if (XFilterEvent(&ev, win))
 			continue;
 		switch(ev.type) {
-		case DestroyNotify:
-			if (ev.xdestroywindow.window != win)
+			case DestroyNotify:
+				if (ev.xdestroywindow.window != win)
+					break;
+				cleanup();
+				exit(1);
+			case ButtonPress:
+				buttonpress(&ev);
 				break;
-			cleanup();
-			exit(1);
-		case ButtonPress:
-			buttonpress(&ev);
-			break;
-		case Expose:
-			if (ev.xexpose.count == 0)
-				drw_map(drw, win, 0, 0, mw, mh);
-			break;
-		case FocusIn:
-			/* regrab focus from parent window */
-			if (ev.xfocus.window != win)
-				grabfocus();
-			break;
-		case KeyPress:
-			keypress(&ev.xkey);
-			break;
-		case SelectionNotify:
-			if (ev.xselection.property == utf8)
-				paste();
-			break;
-		case VisibilityNotify:
-			if (ev.xvisibility.state != VisibilityUnobscured)
-				XRaiseWindow(dpy, win);
-			break;
+			case Expose:
+				if (ev.xexpose.count == 0)
+					drw_map(drw, win, 0, 0, mw, mh);
+				break;
+			case FocusIn:
+				/* regrab focus from parent window */
+				if (ev.xfocus.window != win)
+					grabfocus();
+				break;
+			case KeyPress:
+				keypress(&ev.xkey);
+				break;
+			case SelectionNotify:
+				if (ev.xselection.property == utf8)
+					paste();
+				break;
+			case VisibilityNotify:
+				if (ev.xvisibility.state != VisibilityUnobscured)
+					XRaiseWindow(dpy, win);
+				break;
 		}
 	}
 }
 
-static void
+	static void
 setup(void)
 {
 	int x, y, i, j;
@@ -956,7 +965,7 @@ setup(void)
 	{
 		if (!XGetWindowAttributes(dpy, parentwin, &wa))
 			die("could not get embedding window attributes: 0x%lx",
-			    parentwin);
+					parentwin);
 		x = 0;
 		y = topbar ? 0 : wa.height - mh;
 		mw = wa.width;
@@ -969,10 +978,10 @@ setup(void)
 	swa.override_redirect = True;
 	swa.background_pixel = scheme[SchemeNorm][ColBg].pixel;
 	swa.event_mask = ExposureMask | KeyPressMask | VisibilityChangeMask |
-	                 ButtonPressMask;
+		ButtonPressMask;
 	win = XCreateWindow(dpy, parentwin, x, y, mw, mh, 0,
-	                    CopyFromParent, CopyFromParent, CopyFromParent,
-	                    CWOverrideRedirect | CWBackPixel | CWEventMask, &swa);
+			CopyFromParent, CopyFromParent, CopyFromParent,
+			CWOverrideRedirect | CWBackPixel | CWEventMask, &swa);
 	XSetClassHint(dpy, win, &ch);
 
 
@@ -981,7 +990,7 @@ setup(void)
 		die("XOpenIM failed: could not open input device");
 
 	xic = XCreateIC(xim, XNInputStyle, XIMPreeditNothing | XIMStatusNothing,
-	                XNClientWindow, win, XNFocusWindow, win, NULL);
+			XNClientWindow, win, XNFocusWindow, win, NULL);
 
 	XMapRaised(dpy, win);
 	if (embed) {
@@ -997,17 +1006,17 @@ setup(void)
 	drawmenu();
 }
 
-static void
+	static void
 usage(void)
 {
 	fputs("usage: dmenu [-bfivS] [-l lines] [-h height] [-p prompt] [-fn font] [-m monitor]\n"
-	      "             [-nb color] [-nf color] [-sb color] [-sf color]\n"
-		  "             [-nhb color] [-nhf color] [-shb color] [-shf color]\n"
-		  "             [-w windowid] [-it text] [-n number]\n", stderr);
+			"             [-nb color] [-nf color] [-sb color] [-sf color]\n"
+			"             [-nhb color] [-nhf color] [-shb color] [-shf color]\n"
+			"             [-w windowid] [-it text] [-n number]\n", stderr);
 	exit(1);
 }
 
-int
+	int
 main(int argc, char *argv[])
 {
 	XWindowAttributes wa;
@@ -1029,9 +1038,12 @@ main(int argc, char *argv[])
 		else if (!strcmp(argv[i], "-s")) { /* case-sensitive item matching */
 			fstrncmp = strncmp;
 			fstrstr = strstr;
-		} else if (i + 1 == argc)
+		}
+		else if (!strcmp(argv[i], "-r"))
+			restrict_return = 1;
+		else if (i + 1 == argc)
 			usage();
-		/* these options take one argument */
+	/* these options take one argument */
 		else if (!strcmp(argv[i], "-l"))   /* number of lines in vertical list */
 			lines = atoi(argv[++i]);
 		else if (!strcmp(argv[i], "-h")) { /* minimum height of one menu line */
@@ -1081,7 +1093,7 @@ main(int argc, char *argv[])
 		parentwin = root;
 	if (!XGetWindowAttributes(dpy, parentwin, &wa))
 		die("could not get embedding window attributes: 0x%lx",
-		    parentwin);
+				parentwin);
 	drw = drw_create(dpy, screen, root, wa.width, wa.height);
 	if (!drw_fontset_create(drw, fonts, LENGTH(fonts)))
 		die("no fonts could be loaded.");
