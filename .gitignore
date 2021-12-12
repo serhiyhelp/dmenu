@@ -4,4 +4,6 @@ dmenu
 stest
 config.h
 *.orig
+*.*.orig
 *.rej
+*.*.rej
