@@ -6,7 +6,10 @@ static int restrict_return = 0;				/* -r option; if 1, disables shift-return and
 static int fuzzy = 1;                      /* -F  option; if 0, dmenu doesn't use fuzzy matching     */
 /* -fn option overrides fonts[0]; default X11 font or font set */
 static const char *fonts[] = {
-	"monospace:size=10"
+    "Fantasque Sans Mono:size=8",
+    "Material Icons:size=10",
+    "FontAwesome:size=10",
+    "Noto Color Emoji:size=10"
 };
 static const char *prompt      = NULL;      /* -p  option; prompt to the left of input field */
 static const char *colors[SchemeLast][2] = {
